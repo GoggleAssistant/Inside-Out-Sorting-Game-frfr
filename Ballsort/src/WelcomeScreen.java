@@ -8,7 +8,7 @@ public class WelcomeScreen extends JFrame {
     public WelcomeScreen() {
         // Set up JFrame properties
         setTitle("Title Screen");
-        setSize(1500, 700);
+        setSize(1280, 720);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Center the frame on spawn
@@ -32,26 +32,35 @@ public class WelcomeScreen extends JFrame {
         ImageIcon scaledLogoIcon = new ImageIcon(scaledLogoImage);
         
         JLabel logoLabel = new JLabel(scaledLogoIcon);
-        logoLabel.setBounds(600, 50, 300, 300); // Adjust x, y, width, height as needed
+        logoLabel.setBounds(500, 50, 300, 300); // Adjust x, y, width, height as needed
         mainPanel.add(logoLabel);
 
         // Add "Choose Difficulty" label
         JLabel difficultyLabel = new JLabel("Choose Difficulty");
         difficultyLabel.setFont(new Font("Arial", Font.BOLD, 24));
         difficultyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        difficultyLabel.setBounds(600, 400, 300, 50); // Adjust x, y, width, height as needed
+        difficultyLabel.setBounds(500, 400, 300, 50); // Adjust x, y, width, height as needed
         difficultyLabel.setForeground(Color.WHITE); // Color to stand out against the background
         mainPanel.add(difficultyLabel);
 
         // Add difficulty buttons
-        JButton easyButton = createDifficultyButton("Easy", 440, 460);
-        JButton mediumButton = createDifficultyButton("Medium", 650, 460);
-        JButton hardButton = createDifficultyButton("Hard", 860, 460);
+        JButton easyButton = createDifficultyButton("Easy", 340, 460);
+        JButton mediumButton = createDifficultyButton("Medium", 550, 460);
+        JButton hardButton = createDifficultyButton("Hard", 760, 460);
 
         // Add action listeners to buttons
-        easyButton.addActionListener(e -> System.out.println("Easy selected"));
-        mediumButton.addActionListener(e -> System.out.println("Medium selected"));
-        hardButton.addActionListener(e -> System.out.println("Hard selected"));
+        easyButton.addActionListener(e -> {
+            new GameSetup("easy");
+            dispose(); // Close the welcome screen
+        });
+        mediumButton.addActionListener(e -> {
+            new GameSetup("medium");
+            dispose();
+        });
+        hardButton.addActionListener(e -> {
+            new GameSetup("hard");
+            dispose();
+        });
 
         mainPanel.add(easyButton);
         mainPanel.add(mediumButton);
