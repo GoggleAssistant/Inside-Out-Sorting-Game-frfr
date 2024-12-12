@@ -62,7 +62,7 @@ public class GameSetup extends JFrame {
         tubePanel.setBackground(new Color(128, 128, 128, 192));
         tubePanel.setLayout(null);
         // TODO: Remove development borders when finished
-        tubePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+        //tubePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         
         // Position the tube panel in the center
         int tubePanelX = (getWidth() - 1300) / 2;
