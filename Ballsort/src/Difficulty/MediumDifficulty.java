@@ -92,7 +92,9 @@ public class MediumDifficulty {
 
             // Add action listener to the button
             final int tubeIndex = i + 1; // Store the tube index (1-based)
-            button.addActionListener(e -> buttonActions(tubeIndex)); // Call buttonActions with the tube index
+            button.addActionListener(e -> {
+                buttonActions(tubeIndex); // Call buttonActions with the tube index
+            });
 
             // Add the button to the tubePanel
             tubePanel.add(button);
@@ -136,7 +138,7 @@ public class MediumDifficulty {
         printTubes(); // Print tube states to terminal
         System.out.println("Held number: " + (heldBall == -1 ? "none" : heldBall));
     }
-
+    
     // Push method: Adds a value to the bottom-most empty slot in the tube
     public void push(int[] tube, int value) {
         for (int i = tube.length - 1; i >= 0; i--) { // Start from the bottom of the tube

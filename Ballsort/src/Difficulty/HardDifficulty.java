@@ -8,29 +8,21 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class HardDifficulty {
-    private JPanel[] tubes;
-    private int[] tube1;
-    private int[] tube2;
-    private int[] tube3;
-    private int[] tube4;
-    private int[] tube5;
-    private int[] tube6;
-    private int[] tube7;
-    private int[] tube8;
-    private int[] tube9;
-    private int[] tube10;
-    private int[] tube11; // New tube 11
-    private int[] tube12; // New tube 12
+    private JPanel[] tubes; // Array to hold the tube panels
+    private int[] tube1, tube2, tube3, tube4, tube5, tube6, tube7, tube8, tube9, tube10, tube11, tube12; // Individual tubes
 
-    private int heldBall;
-    private int[] ballDispenser;
-    private JPanel tubePanel; // Declare tubePanel as an instance variable
-    private int tubePopped; // To track the tube from which a ball was popped
+    private int heldBall; // Currently held ball value
+    private int[] ballDispenser; // Array to hold the balls available for distribution
+    private JPanel tubePanel; // Panel that contains all the tubes
+    private int tubePopped; // Index of the tube from which a ball was popped
+    private int ghostTubeIndex; // Index of the tube displaying the ghost ball
+    private int ghostCellIndex; // Index of the cell displaying the ghost ball
 
+    // Constructor to initialize the HardDifficulty game
     public HardDifficulty(JPanel tubePanel) {
-        this.tubePanel = tubePanel; // Assign the parameter to the instance variable
-        tubes = new JPanel[12]; // Update to accommodate 12 tubes
-        tube1 = new int[5];
+        this.tubePanel = tubePanel; // Assign the provided tube panel to the instance variable
+        tubes = new JPanel[12]; // Initialize the array for 12 tubes
+        tube1 = new int[5]; // Each tube can hold 5 balls
         tube2 = new int[5];
         tube3 = new int[5];
         tube4 = new int[5];
@@ -40,68 +32,65 @@ public class HardDifficulty {
         tube8 = new int[5];
         tube9 = new int[5];
         tube10 = new int[5];
-        tube11 = new int[5]; // Initialize new tube 11
-        tube12 = new int[5]; // Initialize new tube 12
-        heldBall = -1;
-        ballDispenser = new int[45]; // Change the size to accommodate 5 of each integer from 1 to 9
+        tube11 = new int[5];
+        tube12 = new int[5];
+        heldBall = -1; // No ball is held initially
+        ballDispenser = new int[45]; // Array to hold 5 of each integer from 1 to 9
 
-        
         // Fill the ballDispenser with 5 of each integer from 1 to 9
         int index = 0;
         for (int i = 1; i <= 9; i++) {
             for (int j = 0; j < 5; j++) { // Generate 5 of each integer
-                ballDispenser[index++] = i; // Add 5 of each integer
+                ballDispenser[index++] = i; // Add 5 of each integer to the dispenser
             }
         }
-        
-        graphics(); // Call graphics method to set up the UI
-        gameStart(); // Call gameStart to shuffle and print the ballDispenser
-        displayBalls(); // Call displayBalls to show the images in the tubes
-        gameLogic();
+
+        graphics(); // Set up the UI components
+        gameStart(); // Shuffle and distribute the balls into the tubes
+        displayBalls(); // Display the images of the balls in the tubes
+        gameLogic(); // Placeholder for game logic
     }
 
+    // Method to set up the graphics for the tubes and buttons
     public void graphics() {
         // Calculate starting X position to center 12 tubes
-        int tubeWidth = 100; // New width for each tube
+        int tubeWidth = 100; // Width for each tube
         int gapWidth = 5; // Gap between tubes
-        int totalWidth = 12 * tubeWidth + 11 * gapWidth; // 12 tubes and 11 gaps
-        int startX = (tubePanel.getWidth() - totalWidth) / 2;
-        
-        // Create 12 tubes and buttons
+        int totalWidth = 12 * tubeWidth + 11 * gapWidth; // Total width for all tubes and gaps
+        int startX = (tubePanel.getWidth() - totalWidth) / 2; // Centering the tubes
+
+        // Create 12 tubes and their corresponding buttons
         for (int i = 0; i < 12; i++) {
             // Create tube panel
             tubes[i] = new JPanel();
-            tubes[i].setOpaque(false);
-            tubes[i].setPreferredSize(new Dimension(tubeWidth, 500)); // Adjusted size for wider tubes
-            tubes[i].setLayout(new GridLayout(5, 1, 3, 3));
-            
-            // Set a 10-pixel border on the tube panel, but no border on the top
+            tubes[i].setOpaque(false); // Make the tube panel transparent
+            tubes[i].setPreferredSize(new Dimension(tubeWidth, 500)); // Set preferred size for the tube
+            tubes[i].setLayout(new GridLayout(5, 1, 3, 3)); // Layout for 5 cells in each tube
+
+            // Set a border for the tube panel
             tubes[i].setBorder(BorderFactory.createMatteBorder(0, 5, 5, 5, Color.WHITE)); // No border on top, 10 pixels on other sides
 
-            // Create 5 cells for each tube without shading or borders
+            // Create 5 cells for each tube
             for (int j = 0; j < 5; j++) {
                 JPanel cell = new JPanel();
-                cell.setPreferredSize(new Dimension(100, 100)); // Adjusted size for smaller cells
+                cell.setPreferredSize(new Dimension(100, 100)); // Size for each cell
                 cell.setOpaque(false); // Set opaque to false for transparency
-                
-                // Set the background color to transparent
-                cell.setBackground(new Color(0, 0, 0, 0)); // Fully transparent
-                
-                // Remove the border from the cell
-                cell.setBorder(null);
+                cell.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
+                cell.setBorder(null); // Remove border from the cell
                 tubes[i].add(cell); // Add the cell to the tube
             }
-            
-            tubes[i].setBounds(startX + i * (tubeWidth + gapWidth), 10, tubeWidth, 500); // Adjusted bounds for new size
-            tubePanel.add(tubes[i]);
 
-            // Create a transparent button
+            // Set bounds for the tube panel
+            tubes[i].setBounds(startX + i * (tubeWidth + gapWidth), 10, tubeWidth, 500); // Positioning the tubes
+            tubePanel.add(tubes[i]); // Add the tube panel to the main tube panel
+
+            // Create a transparent button for user interaction
             JButton button = new JButton();
             button.setOpaque(false); // Make the button transparent
             button.setContentAreaFilled(false); // Remove the button's background
             button.setBorderPainted(false); // Remove the button's border
             button.setPreferredSize(new Dimension(tubeWidth, 500)); // Set the same size as the tube panel
-            button.setBounds(startX + i * (tubeWidth + gapWidth), 10, tubeWidth, 500); // Set the same position as the tube panel
+            button.setBounds(startX + i * (tubeWidth + gapWidth), 10, tubeWidth, 500); // Positioning the button
 
             // Add action listener to the button
             final int tubeIndex = i + 1; // Store the tube index (1-based)
@@ -112,15 +101,15 @@ public class HardDifficulty {
         }
     }
 
-    // Updated buttonActions method
+    // Method to handle button actions for tube interaction
     public void buttonActions(int selectedTubeIndex) {
-        int[] selectedTube = getTube(selectedTubeIndex); // Method to get the selected tube array
+        int[] selectedTube = getTube(selectedTubeIndex); // Get the selected tube array
 
         if (heldBall == -1) { // Case: No ball is currently held
             if (isEmpty(selectedTube)) {
                 System.out.println("The selected tube is empty. Nothing to pop.");
             } else {
-                heldBall = pop(selectedTube);
+                heldBall = pop(selectedTube); // Pop a ball from the selected tube
                 tubePopped = selectedTubeIndex; // Store the tube from which the ball was popped
                 System.out.println("Ball held: " + heldBall);
             }
@@ -130,23 +119,23 @@ public class HardDifficulty {
                 push(getTube(tubePopped), heldBall); // Return ball to original tube
                 heldBall = -1; // Clear held ball
             } else if (isEmpty(selectedTube)) {
-                push(selectedTube, heldBall);
+                push(selectedTube, heldBall); // Push the held ball into the selected tube
                 heldBall = -1; // Clear held ball
             } else {
-                int topBall = peek(selectedTube);
+                int topBall = peek(selectedTube); // Peek at the top ball in the selected tube
                 if (topBall != heldBall) {
                     System.out.println("Top ball (" + topBall + ") does not match held ball (" + heldBall + "). Returning ball to tube " + tubePopped);
                     push(getTube(tubePopped), heldBall); // Return ball to original tube
                     heldBall = -1; // Clear held ball
                 } else {
-                    push(selectedTube, heldBall);
+                    push(selectedTube, heldBall); // Push the held ball into the selected tube
                     heldBall = -1; // Clear held ball
                 }
             }
         }
 
-        displayBalls(); // Update GUI
-        printTubes(); // Print tube states to terminal
+        displayBalls(); // Update the GUI to reflect changes
+        printTubes(); // Print the current state of the tubes to the terminal
         System.out.println("Held number: " + (heldBall == -1 ? "none" : heldBall));
     }
 
@@ -164,10 +153,10 @@ public class HardDifficulty {
     // Pop method: Removes and returns the top ball from the tube
     public int pop(int[] tube) {
         for (int i = 0; i < tube.length; i++) {
-            if (tube[i] != 0) {
-                int value = tube[i];
+            if (tube[i] != 0) { // Check for a non-empty slot
+                int value = tube[i]; // Store the value of the ball
                 tube[i] = 0; // Clear the slot
-                return value;
+                return value; // Return the value of the popped ball
             }
         }
         return -1; // Return -1 if the tube is empty
@@ -176,8 +165,8 @@ public class HardDifficulty {
     // Peek method: Returns the top ball without removing it
     public int peek(int[] tube) {
         for (int i = 0; i < tube.length; i++) {
-            if (tube[i] != 0) {
-                return tube[i];
+            if (tube[i] != 0) { // Check for a non-empty slot
+                return tube[i]; // Return the value of the top ball
             }
         }
         return -1; // Return -1 if the tube is empty
@@ -186,21 +175,21 @@ public class HardDifficulty {
     // Check if a tube is full
     public boolean isFull(int[] tube) {
         for (int ball : tube) {
-            if (ball == 0) {
-                return false;
+            if (ball == 0) { // If any slot is empty
+                return false; // The tube is not full
             }
         }
-        return true;
+        return true; // The tube is full
     }
 
     // Check if a tube is empty
     public boolean isEmpty(int[] tube) {
         for (int ball : tube) {
-            if (ball != 0) {
-                return false;
+            if (ball != 0) { // If any slot is filled
+                return false; // The tube is not empty
             }
         }
-        return true;
+        return true; // The tube is empty
     }
 
     // Utility method to get a tube array by its index
@@ -218,25 +207,26 @@ public class HardDifficulty {
             case 10 -> tube10;
             case 11 -> tube11; // New tube 11
             case 12 -> tube12; // New tube 12
-            default -> null;
+            default -> null; // Return null for invalid index
         };
     }
 
     // Prints the current state of all tubes
     public void printTubes() {
-        for (int i = 0; i < 12; i++) { // Update to print all 12 tubes
+        for (int i = 0; i < 12; i++) { // Loop through all 12 tubes
             int[] tube = getTube(i + 1); // Get the tube array
-            System.out.print("Tube " + (i + 1) + ": ");
+            System.out.print("Tube " + (i + 1) + ": "); // Print tube number
             for (int ball : tube) {
-                System.out.print("[" + (ball == 0 ? "-" : ball) + "] ");
+                System.out.print("[" + (ball == 0 ? "-" : ball) + "] "); // Print ball values or "-" for empty slots
             }
-            System.out.println();
+            System.out.println(); // New line after each tube
         }
     }
 
+    // Method to display the balls in the tubes
     public void displayBalls() {
         // Loop through each tube and update the cells with images
-        for (int i = 0; i < 12; i++) { // Update to loop through all 12 tubes
+        for (int i = 0; i < 12; i++) { // Loop through all 12 tubes
             int[] currentTube = switch (i) {
                 case 0 -> tube1;
                 case 1 -> tube2;
@@ -253,15 +243,15 @@ public class HardDifficulty {
                 default -> new int[0]; // Fallback
             };
 
-            for (int j = 0; j < 5; j++) {
-                int value = currentTube[j];
+            for (int j = 0; j < 5; j++) { // Loop through each cell in the tube
+                int value = currentTube[j]; // Get the value of the ball in the cell
                 JPanel cell = (JPanel) tubes[i].getComponent(j); // Get the corresponding cell panel
 
                 // Load the image based on the value
                 if (value > 0) {
-                    String imagePath = "Ballsort/lib/BackgroundAssets/Bubbles/" + value + ".png";
-                    ImageIcon icon = new ImageIcon(imagePath);
-                    JLabel label = new JLabel(icon);
+                    String imagePath = "Ballsort/lib/BackgroundAssets/Bubbles/" + value + ".png"; // Path to the ball image
+                    ImageIcon icon = new ImageIcon(imagePath); // Create an ImageIcon from the image path
+                    JLabel label = new JLabel(icon); // Create a JLabel to hold the image
                     cell.removeAll(); // Clear previous components
                     cell.add(label); // Add the image label to the cell
                 } else {
@@ -274,10 +264,11 @@ public class HardDifficulty {
         }
     }
 
+    // Method to start the game and distribute balls into tubes
     public void gameStart() {
         // Shuffle the ballDispenser array
-        Integer[] ballDispenserList = Arrays.stream(ballDispenser).boxed().toArray(Integer[]::new);
-        List<Integer> ballList = new ArrayList<>(Arrays.asList(ballDispenserList));
+        Integer[] ballDispenserList = Arrays.stream(ballDispenser).boxed().toArray(Integer[]::new); // Convert to Integer array
+        List<Integer> ballList = new ArrayList<>(Arrays.asList(ballDispenserList)); // Create a list from the array
 
         Collections.shuffle(ballList); // Shuffle the list
 
@@ -313,8 +304,8 @@ public class HardDifficulty {
         printTubes();
     }
 
+    // Placeholder for game logic
     public void gameLogic() {
-        // Placeholder for game logic
         System.out.println("HardDifficulty game logic executed.");
     }
 }
